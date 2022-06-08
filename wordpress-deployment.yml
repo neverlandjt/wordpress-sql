@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  labels:
+    app: wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+        - name: wordpress
+          image: wordpress:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: WORDPRESS_DB_NAME
+              valueFrom: 
+                configMapKeyRef:
+                  name: wordpress-sql-configmap
+                  key: database_name
+            - name: WORDPRESS_DB_HOST
+              valueFrom: 
+                configMapKeyRef:
+                  name: wordpress-sql-configmap
+                  key: database_host
+          envFrom:
+          - secretRef:
+             name: wordpress-secret
+      restartPolicy: Always

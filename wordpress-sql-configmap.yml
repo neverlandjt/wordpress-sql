@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wordpress-sql-configmap
+data:
+  database_name: wordpress
+  database_host: db-service

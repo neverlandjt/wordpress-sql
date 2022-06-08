@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  labels:
+    app: db
+  name: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: db
+          image: mysql:8.0.27
+          ports:
+            - containerPort: 3306
+            - containerPort: 33060
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: db-data
+          env:
+            - name: MYSQL_DATABASE
+              valueFrom: 
+                configMapKeyRef:
+                  name: wordpress-sql-configmap
+                  key: database_name
+          envFrom:
+          - secretRef:
+              name: mysql-secret
+            
+      restartPolicy: Always
+      volumes:
+        - name: db-data
+          persistentVolumeClaim:
+            claimName: db-data
